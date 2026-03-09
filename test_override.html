@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Supabase Override Test</h1>
+    <pre id="log"></pre>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = 'https://zvrlstcwiozitsidgezp.supabase.co';
+        const supabaseKey = 'sb_publishable_70IWjmsl7RrJ6QS21qhJAA_74j8nCRU';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const log = (msg) => document.getElementById('log').innerText += msg + '\n';
+
+        async function runTest() {
+            log('Starting Database Override Test...');
+            const workerId = 'a9b2d862-23c3-4f96-be60-9366e6c196ea';
+            const testDate = '2026-12-31';
+
+            log('Attempting upsert with is_expected_override: true...');
+            try {
+                const { data, error } = await supabase
+                    .from('daily_collections')
+                    .upsert({
+                        user_id: 'browser_test',
+                        worker_id: workerId,
+                        date: testDate,
+                        expected_amount: 999,
+                        collected_amount: 0,
+                        status: 'PARTIAL',
+                        is_expected_override: true,
+                        notes: 'Browser based override test'
+                    }, { onConflict: 'user_id,worker_id,date' })
+                    .select();
+
+                if (error) {
+                    log('❌ FAILED: ' + error.message);
+                    if (error.message.includes('column "is_expected_override" ... does not exist')) {
+                        log('\n👉 CAUSE IDENTIFIED: The database column "is_expected_override" is missing.');
+                        log('Please run the SQL migration 003 in your Supabase dashboard.');
+                    }
+                } else {
+                    log('✅ SUCCESS!');
+                    log('Data returned: ' + JSON.stringify(data));
+                }
+            } catch (err) {
+                log('💥 CRASH: ' + err.message);
+            }
+        }
+
+        runTest();
+    </script>
+</body>
+</html>

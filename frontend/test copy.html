@@ -1,0 +1,331 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Tester - Agent Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f4f7fb;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 400px;
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #1a1a1a; }
+        p { color: #666; font-size: 0.9rem; line-height: 1.5; margin-bottom: 2rem; }
+        button {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        button:hover { background: #ff3333; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #status {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Database Reset Tool</h1>
+        <p>Warning: This will permanently delete <b>all data</b> (collections, expenses, settlements, and payments) for testing purposes.</p>
+        <button id="clearBtn">Clear All Data</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const supabaseUrl = "https://tfmvgndtfvblyvzaakmo.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbXZnbmR0ZnZibHl2emFha21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4MzYyMTAsImV4cCI6MjA4NDQxMjIxMH0.khvPw3dVmjaLyPjZmHcsswLH0DezsOf5AAfIUDgSAP8";
+        
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const btn = document.getElementById('clearBtn');
+        const status = document.getElementById('status');
+
+        btn.addEventListener('click', async () => {
+            if (!confirm("Are you absolutely sure? This cannot be undone.")) return;
+            
+            btn.disabled = true;
+            status.textContent = "Clearing tables...";
+            status.className = "";
+
+            try {
+                // Delete in order to respect foreign keys (if any)
+                const tables = [
+                    'settlement_allocations',
+                    'expense_payments',
+                    'settlements',
+                    'weekly_expenses',
+                    'daily_collections'
+                ];
+
+                for (const table of tables) {
+                    const { error } = await _supabase
+                        .from(table)
+                        .delete()
+                        .neq('user_id', 'NOT_AN_ID'); // Force delete all rows
+
+                    if (error) throw error;
+                    console.log(`Cleared ${table}`);
+                }
+
+                status.textContent = "Database cleared successfully!";
+                status.className = "success";
+            } catch (err) {
+                console.error(err);
+                status.textContent = "Error: " + err.message;
+                status.className = "error";
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Connection Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #4ec9b0;
+    }
+    pre {
+      background: #252526;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      border-left: 3px solid #4ec9b0;
+    }
+    .success { color: #4ec9b0; }
+    .error { color: #f48771; }
+    .info { color: #569cd6; }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    #output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Supabase Connection Test</h1>
+  <p>Click the button below to test your Supabase connection:</p>
+  
+  <button onclick="runTest()">Run Test</button>
+  <button onclick="clearOutput()">Clear Output</button>
+  <button onclick="deleteAllData()" style="background: #a12c2c;">🗑️ Delete All Data</button>
+  
+  <div id="output"></div>
+
+  <script type="module">
+    import { supabase } from './src/lib/supabase.ts';
+
+    window.supabase = supabase;
+    
+    window.runTest = async function() {
+      const output = document.getElementById('output');
+      output.innerHTML = '<pre>🔍 Testing Supabase Connection...\n\n</pre>';
+
+      function log(message, type = 'info') {
+        const pre = output.querySelector('pre');
+        const span = document.createElement('span');
+        span.className = type;
+        span.textContent = message + '\n';
+        pre.appendChild(span);
+      }
+
+      // Test 1: Check credentials
+      log('1️⃣ Checking environment variables:', 'info');
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      log(`   URL: ${url || '❌ Missing'}`, url ? 'success' : 'error');
+      log(`   API Key: ${key ? '✅ Present (length: ' + key.length + ')' : '❌ Missing'}`, key ? 'success' : 'error');
+      log('');
+
+      // Test 2: SELECT
+      log('2️⃣ Testing SELECT query:', 'info');
+      try {
+        const { data, error } = await supabase
+          .from('daily_collections')
+          .select('*')
+          .limit(5);
+
+        if (error) {
+          log(`   ❌ Error: ${error.message}`, 'error');
+          log(`   Details: ${JSON.stringify(error, null, 2)}`, 'error');
+        } else {
+          log(`   ✅ Success! Found ${data?.length || 0} records`, 'success');
+          if (data && data.length > 0) {
+            log(`   Sample: ${JSON.stringify(data[0], null, 2)}`, 'info');
+          }
+        }
+      } catch (err) {
+        log(`   ❌ Exception: ${err.message}`, 'error');
+      }
+      log('');
+
+      // Test 3: INSERT
+      log('3️⃣ Testing INSERT:', 'info');
+      const testPayment = {
+        user_id: 'default_user',
+        date: '2026-01-20',
+        expected_amount: 100,
+        collected_amount: 100,
+        status: 'FULL',
+        notes: 'Test from browser'
+      };
+
+      try {
+        const { data, error } = await supabase
+          .from('daily_collections')
+          .insert(testPayment)
+          .select()
+          .single();
+
+        if (error) {
+          log(`   ❌ Error: ${error.message}`, 'error');
+          log(`   Details: ${JSON.stringify(error, null, 2)}`, 'error');
+        } else {
+          log(`   ✅ Success! Created record`, 'success');
+          log(`   ID: ${data.id}`, 'info');
+        }
+      } catch (err) {
+        log(`   ❌ Exception: ${err.message}`, 'error');
+      }
+      log('');
+
+      // Test 4: UPSERT
+      log('4️⃣ Testing UPSERT:', 'info');
+      const updatedPayment = {
+        user_id: 'default_user',
+        date: '2026-01-20',
+        expected_amount: 100,
+        collected_amount: 50,
+        status: 'PARTIAL',
+        notes: 'Updated from browser'
+      };
+
+      try {
+        const { data, error } = await supabase
+          .from('daily_collections')
+          .upsert(updatedPayment, {
+            onConflict: 'user_id,date',
+            ignoreDuplicates: false
+          })
+          .select()
+          .single();
+
+        if (error) {
+          log(`   ❌ Error: ${error.message}`, 'error');
+          log(`   Details: ${JSON.stringify(error, null, 2)}`, 'error');
+        } else {
+          log(`   ✅ Success! Updated record`, 'success');
+          log(`   Status: ${data.status}, Amount: $${data.collected_amount}`, 'info');
+        }
+      } catch (err) {
+        log(`   ❌ Exception: ${err.message}`, 'error');
+      }
+      log('');
+
+      log('✅ Test complete!', 'success');
+    };
+
+    window.deleteAllData = async function() {
+      if (!confirm('🚨 ARE YOU SURE? This will permanently delete ALL data in ALL tables.')) return;
+
+      const output = document.getElementById('output');
+      output.innerHTML = '<pre>🧨 Deleting all data...\n\n</pre>';
+
+      function log(message, type = 'info') {
+        const pre = output.querySelector('pre');
+        const span = document.createElement('span');
+        span.className = type;
+        span.textContent = message + '\n';
+        pre.appendChild(span);
+      }
+
+      const tables = [
+        'payment_events',
+        'settlement_allocations',
+        'expense_payments',
+        'daily_collections',
+        'weekly_expenses',
+        'settlements'
+      ];
+
+      for (const table of tables) {
+        log(`🧹 Clearing ${table}...`);
+        try {
+          // Broad delete: neq zero uuid or just match anything
+          const { error } = await supabase
+            .from(table)
+            .delete()
+            .neq('id', '00000000-0000-0000-0000-000000000000'); // Standard hack to delete all
+
+          if (error) {
+            log(`   ❌ Failed: ${error.message}`, 'error');
+          } else {
+            log(`   ✅ Table cleared`, 'success');
+          }
+        } catch (err) {
+          log(`   ❌ Exception: ${err.message}`, 'error');
+        }
+      }
+
+      log('\n✨ All tables processed.', 'success');
+    };
+
+    window.clearOutput = function() {
+      document.getElementById('output').innerHTML = '';
+    };
+  </script>
+</body>
+</html>

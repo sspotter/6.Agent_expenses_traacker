@@ -1,0 +1,819 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Tester - Agent Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f4f7fb;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 400px;
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #1a1a1a; }
+        p { color: #666; font-size: 0.9rem; line-height: 1.5; margin-bottom: 2rem; }
+        button {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        button:hover { background: #ff3333; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #status {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Database Reset Tool</h1>
+        <p>Warning: This will permanently delete <b>all data</b> (collections, expenses, settlements, and payments) for testing purposes.</p>
+        <button id="clearBtn">Clear All Data</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const supabaseUrl = "https://tfmvgndtfvblyvzaakmo.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbXZnbmR0ZnZibHl2emFha21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4MzYyMTAsImV4cCI6MjA4NDQxMjIxMH0.khvPw3dVmjaLyPjZmHcsswLH0DezsOf5AAfIUDgSAP8";
+        
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const btn = document.getElementById('clearBtn');
+        const status = document.getElementById('status');
+
+        btn.addEventListener('click', async () => {
+            if (!confirm("Are you absolutely sure? This cannot be undone.")) return;
+            
+            btn.disabled = true;
+            status.textContent = "Clearing tables...";
+            status.className = "";
+
+            try {
+                // Delete in order to respect foreign keys (if any)
+                const tables = [
+                    'settlement_allocations',
+                    'expense_payments',
+                    'settlements',
+                    'weekly_expenses',
+                    'daily_collections'
+                ];
+
+                for (const table of tables) {
+                    const { error } = await _supabase
+                        .from(table)
+                        .delete()
+                        .neq('user_id', 'NOT_AN_ID'); // Force delete all rows
+
+                    if (error) throw error;
+                    console.log(`Cleared ${table}`);
+                }
+
+                status.textContent = "Database cleared successfully!";
+                status.className = "success";
+            } catch (err) {
+                console.error(err);
+                status.textContent = "Error: " + err.message;
+                status.className = "error";
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Connection Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #4ec9b0;
+    }
+    pre {
+      background: #252526;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      border-left: 3px solid #4ec9b0;
+    }
+    .success { color: #4ec9b0; }
+    .error { color: #f48771; }
+    .info { color: #569cd6; }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    #output {
+      margin-top: 20px;
+    }
+
+
+    
+  </style>
+</head>
+<body>
+  <h1>🧪 Supabase Connection Test</h1>
+  <p>Click the button below to test your Supabase connection:</p>
+  
+  <button onclick="runTest()">Run Test</button>
+  <button onclick="clearOutput()">Clear Output</button>
+  <button onclick="deleteAllData()" style="background: #a12c2c;">🗑️ Delete All Data</button>
+  
+
+  <button onclick="insertRandomData()">🎲 Insert Random Data</button>
+<button onclick="countAllTables()">📊 Count Records</button>
+<button onclick="exportAllData()">📦 Export All Data</button>
+
+
+<button onclick="importData()">📥 Import Data</button>
+
+<button onclick="sendCountToTelegram()">📨 Send Count to Telegram</button>
+<button onclick="showSummary()">📈 Show Collection Summary</button>
+
+<button onclick="runSummaryAndSend()">📊 Run Summary & Send to Telegram</button>
+
+<input
+  type="file"
+  id="importFile"
+  accept="application/json"
+  style="display:none"
+/>
+
+  <div id="output"></div>
+
+  <script type="module">
+    import { supabase } from './src/lib/supabase.ts';
+
+    window.supabase = supabase;
+    
+    window.runTest = async function() {
+      const output = document.getElementById('output');
+      output.innerHTML = '<pre>🔍 Testing Supabase Connection...\n\n</pre>';
+
+      function log(message, type = 'info') {
+        const pre = output.querySelector('pre');
+        const span = document.createElement('span');
+        span.className = type;
+        span.textContent = message + '\n';
+        pre.appendChild(span);
+      }
+
+      // Test 1: Check credentials
+      log('1️⃣ Checking environment variables:', 'info');
+      let lastSummaryForTelegram = null;
+
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const Telegram_token = import.meta.env.TELEGRAM_BOT_TOKEN;
+      const Telegram_client= import.meta.env.TELEGRAM_CHAT_ID;
+      log(`   URL: ${url || '❌ Missing'}`, url ? 'success' : 'error');
+      log(`   API Key: ${key ? '✅ Present (length: ' + key.length + ')' : '❌ Missing'}`, key ? 'success' : 'error');
+      log('');
+
+      // Test 2: SELECT
+      log('2️⃣ Testing SELECT query:', 'info');
+      try {
+        const { data, error } = await supabase
+          .from('daily_collections')
+          .select('*')
+          .limit(5);
+
+        if (error) {
+          log(`   ❌ Error: ${error.message}`, 'error');
+          log(`   Details: ${JSON.stringify(error, null, 2)}`, 'error');
+        } else {
+          log(`   ✅ Success! Found ${data?.length || 0} records`, 'success');
+          if (data && data.length > 0) {
+            log(`   Sample: ${JSON.stringify(data[0], null, 2)}`, 'info');
+          }
+        }
+      } catch (err) {
+        log(`   ❌ Exception: ${err.message}`, 'error');
+      }
+      log('');
+
+      // Test 3: INSERT
+      log('3️⃣ Testing INSERT:', 'info');
+      const testPayment = {
+        user_id: 'default_user',
+        date: '2026-01-20',
+        expected_amount: 100,
+        collected_amount: 100,
+        status: 'FULL',
+        notes: 'Test from browser'
+      };
+
+      try {
+        const { data, error } = await supabase
+          .from('daily_collections')
+          .insert(testPayment)
+          .select()
+          .single();
+
+        if (error) {
+          log(`   ❌ Error: ${error.message}`, 'error');
+          log(`   Details: ${JSON.stringify(error, null, 2)}`, 'error');
+        } else {
+          log(`   ✅ Success! Created record`, 'success');
+          log(`   ID: ${data.id}`, 'info');
+        }
+      } catch (err) {
+        log(`   ❌ Exception: ${err.message}`, 'error');
+      }
+      log('');
+
+      // Test 4: UPSERT
+      log('4️⃣ Testing UPSERT:', 'info');
+      const updatedPayment = {
+        user_id: 'default_user',
+        date: '2026-01-20',
+        expected_amount: 100,
+        collected_amount: 50,
+        status: 'PARTIAL',
+        notes: 'Updated from browser'
+      };
+
+      try {
+        const { data, error } = await supabase
+          .from('daily_collections')
+          .upsert(updatedPayment, {
+            onConflict: 'user_id,date',
+            ignoreDuplicates: false
+          })
+          .select()
+          .single();
+
+        if (error) {
+          log(`   ❌ Error: ${error.message}`, 'error');
+          log(`   Details: ${JSON.stringify(error, null, 2)}`, 'error');
+        } else {
+          log(`   ✅ Success! Updated record`, 'success');
+          log(`   Status: ${data.status}, Amount: $${data.collected_amount}`, 'info');
+        }
+      } catch (err) {
+        log(`   ❌ Exception: ${err.message}`, 'error');
+      }
+      log('');
+
+      log('✅ Test complete!', 'success');
+    };
+
+    window.deleteAllData = async function() {
+      if (!confirm('🚨 ARE YOU SURE? This will permanently delete ALL data in ALL tables.')) return;
+
+      const output = document.getElementById('output');
+      output.innerHTML = '<pre>🧨 Deleting all data...\n\n</pre>';
+
+      function log(message, type = 'info') {
+        const pre = output.querySelector('pre');
+        const span = document.createElement('span');
+        span.className = type;
+        span.textContent = message + '\n';
+        pre.appendChild(span);
+      }
+
+      const tables = [
+        'payment_events',
+        'settlement_allocations',
+        'expense_payments',
+        'daily_collections',
+        'weekly_expenses',
+        'settlements'
+      ];
+
+      for (const table of tables) {
+        log(`🧹 Clearing ${table}...`);
+        try {
+          // Broad delete: neq zero uuid or just match anything
+          const { error } = await supabase
+            .from(table)
+            .delete()
+            .neq('id', '00000000-0000-0000-0000-000000000000'); // Standard hack to delete all
+
+          if (error) {
+            log(`   ❌ Failed: ${error.message}`, 'error');
+          } else {
+            log(`   ✅ Table cleared`, 'success');
+          }
+        } catch (err) {
+          log(`   ❌ Exception: ${err.message}`, 'error');
+        }
+      }
+
+      log('\n✨ All tables processed.', 'success');
+    };
+
+    window.clearOutput = function() {
+      document.getElementById('output').innerHTML = '';
+    };
+
+
+
+    window.exportAllData = async function () {
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>📦 Exporting all data...\n\n</pre>';
+  const log = createLogger(output);
+
+  const tables = [
+    'payment_events',
+    'settlement_allocations',
+    'expense_payments',
+    'daily_collections',
+    'weekly_expenses',
+    'settlements'
+  ];
+
+  const exportData = {};
+
+  for (const table of tables) {
+    const { data, error } = await supabase
+      .from(table)
+      .select('*');
+
+    if (error) {
+      log(`❌ ${table}: ${error.message}`, 'error');
+      return;
+    }
+
+    exportData[table] = data;
+    log(`✅ ${table}: ${data.length} rows`, 'success');
+  }
+
+  const blob = new Blob(
+    [JSON.stringify(exportData, null, 2)],
+    { type: 'application/json' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `supabase-export-${new Date().toISOString()}.json`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+  log('\n📥 Export downloaded', 'success');
+};
+window.countAllTables = async function () {
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>📊 Counting records...\n\n</pre>';
+  const log = createLogger(output);
+
+  const tables = [
+    'payment_events',
+    'settlement_allocations',
+    'expense_payments',
+    'daily_collections',
+    'weekly_expenses',
+    'settlements'
+  ];
+
+  for (const table of tables) {
+    const { count, error } = await supabase
+      .from(table)
+      .select('*', { count: 'exact', head: true });
+
+    if (error) {
+      log(`❌ ${table}: ${error.message}`, 'error');
+    } else {
+      log(`📁 ${table}: ${count} records`, 'success');
+    }
+  }
+
+  log('\n✅ Count complete', 'success');
+};
+
+
+
+/// inserting random
+
+window.insertRandomData = async function () {
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>🎲 Inserting random test data...\n\n</pre>';
+  const log = createLogger(output);
+
+  const randomInt = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const rows = Array.from({ length: 5 }).map(() => {
+    const expected = randomInt(50, 200);
+    const collected =
+      Math.random() > 0.3 ? randomInt(0, expected) : 0;
+
+    return {
+      user_id: `user_${randomInt(1, 3)}`,
+      date: new Date(
+        Date.now() - randomInt(0, 14) * 86400000
+      ).toISOString().split('T')[0],
+      expected_amount: expected,
+      collected_amount: collected,
+      status:
+        collected === expected
+          ? 'FULL'
+          : collected > 0
+          ? 'PARTIAL'
+          : 'MISSED',
+      notes: 'Randomly generated'
+    };
+  });
+
+  log('♻️ Using UPSERT on (user_id, date)', 'info');
+
+  const { data, error } = await supabase
+    .from('daily_collections')
+    .upsert(rows, {
+      onConflict: 'user_id,date',
+      ignoreDuplicates: false
+    })
+    .select();
+
+  if (error) {
+    log(`❌ Error: ${error.message}`, 'error');
+    return;
+  }
+
+  log(`✅ ${data.length} rows written:\n`, 'success');
+
+  // Pretty print each row
+  data.forEach((row, i) => {
+    log(
+      `#${i + 1} ${row.user_id} | ${row.date} | ${row.status} | $${row.collected_amount}/${row.expected_amount}`,
+      'info'
+    );
+  });
+
+  log('\n📦 Full payload:', 'info');
+  log(JSON.stringify(data, null, 2), 'info');
+};
+
+
+
+
+function createLogger(output) {
+  return function log(message, type = 'info') {
+    const pre = output.querySelector('pre');
+    const span = document.createElement('span');
+    span.className = type;
+    span.textContent = message + '\n';
+    pre.appendChild(span);
+  };
+}
+
+
+
+//import button
+
+window.importData = function () {
+  document.getElementById('importFile').click();
+};
+
+document.getElementById('importFile').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>📥 Importing data...\n\n</pre>';
+  const log = createLogger(output);
+
+  try {
+    const text = await file.text();
+    const json = JSON.parse(text);
+
+    const IMPORT_ORDER = [
+  'settlements',
+  'payment_events',
+  'daily_collections',
+  'weekly_expenses',
+  'expense_payments',
+  'settlement_allocations'
+];
+
+for (const table of IMPORT_ORDER) {
+  const rows = json[table];
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+    log(`⚠️ ${table}: No data to import`, 'info');
+    continue;
+  }
+
+  log(`📂 Importing ${rows.length} rows into ${table}...`);
+
+  const { error } = await supabase
+    .from(table)
+    .insert(rows);
+
+  if (error) {
+    log(`❌ ${table}: ${error.message}`, 'error');
+  } else {
+    log(`✅ ${table}: Import complete`, 'success');
+  }
+}
+
+    log('\n🎉 Import finished!', 'success');
+  } catch (err) {
+    log(`❌ Failed to import: ${err.message}`, 'error');
+  } finally {
+    event.target.value = ''; // reset file input
+  }
+});
+
+
+
+/// send message telegram
+window.sendCountToTelegram = async function () {
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>📊 Counting records and sending to Telegram...\n\n</pre>';
+  const log = createLogger(output);
+
+  const tables = [
+    'payment_events',
+    'settlement_allocations',
+    'expense_payments',
+    'daily_collections',
+    'weekly_expenses',
+    'settlements'
+  ];
+
+  // Count each table
+  const results = [];
+  for (const table of tables) {
+    const { count, error } = await supabase
+      .from(table)
+      .select('*', { count: 'exact', head: true });
+
+    if (error) {
+      log(`❌ ${table}: ${error.message}`, 'error');
+      results.push({ table, count: 'error' });
+    } else {
+      log(`📁 ${table}: ${count} records`, 'success');
+      results.push({ table, count });
+    }
+  }
+
+  log('\n✅ Count complete', 'success');
+
+  // Build Telegram message
+  let text = "📊 Counting records...\n\n";
+  results.forEach(r => {
+    text += `📁 ${r.table}: ${r.count} records\n`;
+  });
+  text += `\n✅ Count complete`;
+
+  // Send to Telegram
+  try {
+
+    const Telegram_token = import.meta.env.TELEGRAM_BOT_TOKEN;
+    const Telegram_client= import.meta.env.TELEGRAM_CHAT_ID;
+    const url = `https://api.telegram.org/bot${Telegram_token}/sendMessage`;
+
+    const body = {
+      chat_id: Telegram_client,
+      text: text
+    };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (data.ok) {
+      log('\n📨 Sent to Telegram successfully!', 'success');
+    } else {
+      log(`\n❌ Telegram error: ${data.description}`, 'error');
+    }
+  } catch (err) {
+    log(`\n❌ Failed to send to Telegram: ${err.message}`, 'error');
+  }
+};
+
+//send summary through telegram
+window.showSummary = async function () {
+  let lastSummaryForTelegram = null;
+
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>📊 Loading collection summary...\n\n</pre>';
+  const log = createLogger(output);
+
+  const { data, error } = await supabase
+    .from('daily_collections')
+    .select('expected_amount, collected_amount');
+
+  if (error) {
+    log(`❌ Error: ${error.message}`, 'error');
+    return;
+  }
+
+  const expected = data.reduce((s, r) => s + (r.expected_amount || 0), 0);
+  const collected = data.reduce((s, r) => s + (r.collected_amount || 0), 0);
+  const outstanding = expected - collected;
+  const completion = expected > 0 ? Math.round((collected / expected) * 100) : 0;
+
+  const barLength = 20;
+  const filled = Math.round((completion / 100) * barLength);
+  const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
+
+  // Build summary text (single source of truth)
+  const summaryText = `
+📊 Collection Summary
+
+EXPECTED
+$${expected.toLocaleString()}
+
+COLLECTED
+$${collected.toLocaleString()}
+
+TOTAL OUTSTANDING
+$${outstanding.toLocaleString()}
+
+COMPLETION
+${completion}%
+[${bar}]
+`.trim();
+
+  lastSummaryForTelegram = summaryText;
+
+  log(summaryText, 'success');
+
+  // Add Telegram button under the bar
+  const btn = document.createElement('button');
+  btn.textContent = '📨 Send Summary to Telegram';
+  btn.style.marginTop = '10px';
+  btn.onclick = sendSummaryToTelegram;
+
+  output.appendChild(btn);
+};
+
+
+//nextphase send summary to telegram
+window.sendSummaryToTelegram = async function () {
+  
+  if (!lastSummaryForTelegram) {
+    alert('No summary available to send.');
+    return;
+  }
+
+  const output = document.getElementById('output');
+  const log = createLogger(output);
+
+  log('\n📨 Sending summary to Telegram...', 'info');
+
+  try {
+    const Telegram_token = import.meta.env.TELEGRAM_BOT_TOKEN;
+    const Telegram_client= import.meta.env.TELEGRAM_CHAT_ID;      // replace with your Telegram chat ID
+
+    const res = await fetch(
+      `https://api.telegram.org/bot${Telegram_token}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: Telegram_client,
+          text: lastSummaryForTelegram
+        })
+      }
+    );
+
+    const result = await res.json();
+
+    if (result.ok) {
+      log('✅ Summary sent to Telegram!', 'success');
+    } else {
+      log(`❌ Telegram error: ${result.description}`, 'error');
+    }
+  } catch (err) {
+    log(`❌ Failed to send: ${err.message}`, 'error');
+  }
+};
+
+
+
+//<button onclick="runSummaryAndSend()">📊 Run Summary & Send to Telegram</button>
+
+
+window.runSummaryAndSend = async function () {
+  const output = document.getElementById('output');
+  output.innerHTML = '<pre>📊 Calculating collection summary...\n\n</pre>';
+  const log = createLogger(output);
+
+  try {
+    const { data, error } = await supabase
+      .from('daily_collections')
+      .select('expected_amount, collected_amount');
+
+    if (error) {
+      log(`❌ Error fetching data: ${error.message}`, 'error');
+      return;
+    }
+
+    const expected = data.reduce((s, r) => s + (r.expected_amount || 0), 0);
+    const collected = data.reduce((s, r) => s + (r.collected_amount || 0), 0);
+    const outstanding = expected - collected;
+    const completion = expected > 0 ? Math.round((collected / expected) * 100) : 0;
+
+    const barLength = 20;
+    const filled = Math.round((completion / 100) * barLength);
+    const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
+
+    const summaryText = `
+📊 Collection Summary
+
+EXPECTED
+$${expected.toLocaleString()}
+
+COLLECTED
+$${collected.toLocaleString()}
+
+TOTAL OUTSTANDING
+$${outstanding.toLocaleString()}
+
+COMPLETION
+${completion}%
+[${bar}]
+`.trim();
+
+    log(summaryText, 'success');
+
+    log('\n📨 Sending summary to Telegram...', 'info');
+
+    // Replace with your tokens
+
+    const Telegram_token = import.meta.env.TELEGRAM_BOT_TOKEN;
+    const Telegram_client= import.meta.env.TELEGRAM_CHAT_ID;
+
+
+    const res = await fetch(
+      `https://api.telegram.org/bot${Telegram_token}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: Telegram_client,
+          text: summaryText
+        })
+      }
+    );
+
+    const result = await res.json();
+
+    if (result.ok) {
+      log('✅ Summary sent to Telegram!', 'success');
+    } else {
+      log(`❌ Telegram error: ${result.description}`, 'error');
+    }
+  } catch (err) {
+    log(`❌ Failed: ${err.message}`, 'error');
+  }
+};
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  --color-primary: rgba(135, 135, 135, 1);
+  /* --color-primary: oklch(0.6 0.16 250); */
+  --color-success: oklch(0.75 0.15 150);
+  --color-warning: oklch(0.85 0.15 85);
+  --color-danger: oklch(0.6 0.2 25);
+  --color-resolved: oklch(0.65 0.15 280);
+  
+  --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 12px -4px rgba(0, 0, 0, 0.03);
+  --shadow-premium-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -4px rgba(0, 0, 0, 0.05);
+}
+
+:root {
+  --bg-app: #fcfcfd;
+  --text-main: #1a1a1e;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --border-glass: rgba(255, 255, 255, 0.3);
+  
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --bg-app: #020617;
+    --text-main: #f8fafc;
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.dark {
+  --bg-app: #020617;
+  --text-main: #f8fafc;
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --border-glass: rgba(255, 255, 255, 0.1);
+}
+
+.light {
+  --bg-app: #fcfcfd;
+  --text-main: #1a1a1e;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --border-glass: rgba(255, 255, 255, 0.3);
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+}
+
+/* Typography Utilities */
+.text-main { color: var(--text-main); }
+
+.text-sub {
+  color: #64748b; /* gray-500 */
+}
+
+@media (prefers-color-scheme: dark) {
+  .text-sub {
+    color: #94a3b8; /* gray-400 */
+  }
+}
+
+.glass-button {
+  background: var(--card-bg);
+  border: 1px solid var(--border-glass);
+  color: var(--text-main);
+  box-shadow: var(--shadow-premium);
+}
+
+.glass-button:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-premium-hover);
+}
+
+/* Custom transitions */
+.transition-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Progress bar animation */
+@keyframes progress-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: progress-shimmer 2s infinite linear;
+}
