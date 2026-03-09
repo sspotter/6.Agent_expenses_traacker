@@ -7,7 +7,7 @@
 
 A powerful and intuitive daily payment tracking system designed for small recurring collections. This application supports partial payments, late settlements, and weekly expenses, maintaining a strict audit trail.
 
-![Dashboard Preview](Public/image-1.png)
+![Dashboard Preview](Public\image-1.png)
 
 ## 🚀 Key Features
 
@@ -41,24 +41,26 @@ This project follows a **"Docs-as-Code"** philosophy. The `docs/` directory cont
 ### Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd Agent_expenses_traacker/frontend
    ```
-
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
-
 3. **Configure Environment Variables**:
    Copy the example environment file and fill in your credentials:
+
    ```bash
    cp .env.example .env
    ```
-   Provide your Supabase URL, Anon Key, and optional Telegram bot details.
 
+   Provide your Supabase URL, Anon Key, and optional Telegram bot details.
 4. **Start the development server**:
+
    ```bash
    npm run dev
    ```
