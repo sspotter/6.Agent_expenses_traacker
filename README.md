@@ -1,117 +1,80 @@
-# Agent Expenses Tracker
+# Agent Expenses Tracker - Frontend
 
-This project is an **Agent Expenses Tracker**, designed as a daily payment tracking system for small recurring collections.
+[![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 
-## Development Methodology
-- **Source of Truth**: `docs/*.md` files.
-- **Workflow**: Docs -> AI -> Code.
+A powerful and intuitive daily payment tracking system designed for small recurring collections. This application supports partial payments, late settlements, and weekly expenses, maintaining a strict audit trail.
 
-## Progress Tracker
+![Dashboard Preview](Public/image-1.png)
 
-### Phase 1: Initialization & Foundation
-- [/] **Documentation Consolidation**
-    - [x] Update Vision (`01-vision.md`)
-    - [x] Update Requirements (`02-requirements.md`)
-    - [x] Update Wireframes (`03-wireframe.md`)
-    - [x] Update UX Rules (`04-ux-rules.md`)
-    - [x] Update Data Model (`05-data-model.md`)
-- [x] **Project Setup**
-    - [x] Initialize Git Repo (if not exists)
-    - [x] Define Tech Stack
-    - [x] Scaffold Frontend
-    - [x] Scaffold Backend
+## 🚀 Key Features
 
-### Phase 2: Core Implementation
-- [x] **Data Layer (Supabase Integration)**
-    - [x] Implement Postgres Schema
-    - [x] Configure Client & Environment
-- [x] **Frontend Implementation**
-    - [x] Daily Collection Grid
-    - [x] Month Navigation
-    - [x] Collection & Settlement Modals
+- **Daily Collection Tracking**: Monitor expected vs. collected amounts with support for Full, Partial, and Missed payment states.
+- **Settlement Logic**: Handles late payments for past partials without altering historical records, ensuring data integrity.
+- **Weekly Expenses Management**: Track operational costs separately from income.
+- **Real-time Summaries**: Instant monthly overviews and weekly income/expense breakdowns.
+- **Telegram Integration**: Automated reporting to Telegram channels for stakeholders.
+- **Mobile Optimized**: Responsive design that adapts key information for mobile viewing.
 
-### Phase 3: UI/UX Refinement
-- [x] **Global Styling**
-    - [x] Premium Glassmorphism Design
-    - [x] Outfit Typography & Brand colors
-- [x] **UX Interactions**
-    - [x] One-Click Collection Speed
-    - [x] Real-time Progress Visualization
+## 🛠️ Tech Stack
 
-### Phase 4: Model & Calculation Refinement
-- [x] **Derived Logic (Accounting Fixes)**
-    - [x] Derived Monthly Summaries
-    - [x] Real-time Weekly Net calculation
-    - [x] Immutable Audit Trail for history
-- [x] **Database Audit**
-    - [x] User ID type migration
-    - [x] Settlement Allocations table
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Backend-as-a-Service**: [Supabase](https://supabase.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
-### Phase 5-14: Advanced Financial Logic & UX
-- [x] **Debt Management**
-    - [x] Debt Explorer (Multi-month visibility)
-    - [x] Separation of Income Debt and Expense Debt
-- [x] **Audit & Transparency**
-    - [x] Payment Events (Immutable Activity Log)
-    - [x] History Sidebars for every record
-    - [x] Automatic Timestamped Notes
-- [x] **Bulk Actions**
-    - [x] Bulk Weekly Expense generation
-- [x] **Theming & Aesthetic Refinement**
-    - [x] System-wide Dark Mode & Theme Toggle
-    - [x] Manual Light/Dark persistence
-    - [x] Glassmorphism & High-end UI updates
-- [x] **Financial Tracking Extensions**
-    - [x] Independent Expense Payments (Partial/Full)
-    - [x] FIFO Settlement Allocation
+## 📖 Docs-Driven Development
 
-## 🔜 Future Roadmap
+This project follows a **"Docs-as-Code"** philosophy. The `docs/` directory contains the source of truth for all project logic, UX rules, and data models. AI is used as a collaborative partner to ensure the codebase strictly adheres to these specifications.
 
-### Phase 15: Visualization & Trends
-- [ ] Interactive charts for Monthly Income vs. Expenses
-- [ ] Weekly profit margin tracking
-- [ ] Financial health scores
+## 🏁 Getting Started
 
-### Phase 16: Authentication & Multi-User
-- [ ] User login & Secure data access
-- [ ] Multiple "Agent" profiles
-- [ ] Role-based access (Agent vs Admin/Accountant)
+### Prerequisites
 
-### Phase 17: Reports & Exports
-- [ ] Export data to CSV/Excel
-- [ ] Generate Monthly PDF Reports
-- [ ] Print-optimized thermal receipt view for settlements
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/)
 
-### Phase 18: Performance & Quality
-- [ ] UI Micro-interactions & animations
-- [ ] Offline support & Optimistic UI refinements
-- [ ] Comprehensive test suite (Unit/E2E)
+### Installation
 
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd Agent_expenses_traacker/frontend
+   ```
 
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
+3. **Configure Environment Variables**:
+   Copy the example environment file and fill in your credentials:
+   ```bash
+   cp .env.example .env
+   ```
+   Provide your Supabase URL, Anon Key, and optional Telegram bot details.
 
+4. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
 
+## 📜 Available Scripts
 
+- `npm run dev`: Start the Vite development server.
+- `npm run build`: Build the production-ready application.
+- `npm run lint`: Run ESLint to verify code quality.
+- `npm run preview`: Preview the production build locally.
 
+## 📁 Project Structure
 
-codes
-to send message
-```
-npx ts-node .\src\lib\simplemessage.ts
-```
-
-
-
-```
-
-```
-
-
-```
-
-```
-
-
-```
-```
-"# 6.Agent_expenses_traacker" 
+- `src/components`: Reusable UI components.
+- `src/hooks`: Custom React hooks for logic and data fetching.
+- `src/lib`: External service initializations (Supabase, Telegram).
+- `src/pages`: Main application views.
+- `src/types`: TypeScript interfaces and types.
+- `src/utils`: Helper functions and formatting logic.
